@@ -47,3 +47,12 @@ export const getDataStorage = async () => {
     return []
   }
 }
+
+
+export const setDataStorage = async (goals: Goal[]) => {
+  try {
+    await AsyncStorage.setItem('@goals', JSON.stringify(goals))
+
+  } catch (e) { }
+}
+

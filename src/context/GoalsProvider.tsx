@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useReducer } from 'react';
-import { getDataStorage } from '../utils/helpers/globalHelpers';
-import { Goal, Task } from '../utils/interfaces/goal.interface';
+import { getDataStorage, setDataStorage } from '../utils/helpers/globalHelpers';
+import { Goal } from '../utils/interfaces/goal.interface';
 import { GoalActionContext, goalsReducer } from './goalsReducer';
 
 const initialState: Goal[] = [
@@ -50,6 +50,36 @@ const initialState: Goal[] = [
     dateCreation: new Date(2021, 4, 23, 10, 11),
     tasks: []
   },
+  {
+    id: 5,
+    title: 'This is a quite long goal to fit',
+    dateCreation: new Date(2021, 4, 23, 10, 11),
+    tasks: []
+  },
+  {
+    id: 6,
+    title: 'This is a quite long goal to fit',
+    dateCreation: new Date(2021, 4, 23, 10, 11),
+    tasks: []
+  },
+  {
+    id: 7,
+    title: 'This is a quite long goal to fit',
+    dateCreation: new Date(2021, 4, 23, 10, 11),
+    tasks: []
+  },
+  {
+    id: 8,
+    title: 'This is a quite long goal to fit',
+    dateCreation: new Date(2021, 4, 23, 10, 11),
+    tasks: []
+  },
+  {
+    id: 9,
+    title: 'This is a quite long goal to fit',
+    dateCreation: new Date(2021, 4, 23, 10, 11),
+    tasks: []
+  },
 ]
 
 type GoalsContextProps = {
@@ -77,20 +107,25 @@ export const GoalsContextProvider = ({ children }: any) => {
   // }, [])
 
   // Before dispatch action, execute middlewares
-  // const dispatchWithMiddlewares = (data: GoalActionContext) => {
-  //   middlewares()
-  //   dispatch(data)
-  // }
+  const dispatchWithMiddlewares = (data: GoalActionContext) => {
+    dispatch(data)
+
+    // *middlewares after
+    setDataStorage(goals)
+      .then(() => {console.log('SAVE DATA')})
+      .catch(() => {console.log('DATA NOT SAVE')})
+
+  }
 
   const modifyTask = (idGoal: number, idTask: number, value: string) => {
-    dispatch({
+    dispatchWithMiddlewares({
       type: 'MODIFY_TASK',
       payload: { idGoal, idTask, value }
     })
   }
 
   const deleteTask = (idGoal: number, idTask: number) => {
-    dispatch({
+    dispatchWithMiddlewares({
       type: 'DELETE_TASK',
       payload: { idGoal, idTask }
     })
@@ -98,7 +133,7 @@ export const GoalsContextProvider = ({ children }: any) => {
 
   const deleteMutiplesTask = (idGoal: number, taskToDelete: number[]) => {
     taskToDelete.forEach( idTaskToDelete => {
-      dispatch({
+      dispatchWithMiddlewares({
         type: 'DELETE_TASK',
         payload: { idGoal, idTask: idTaskToDelete }
       })
@@ -106,14 +141,14 @@ export const GoalsContextProvider = ({ children }: any) => {
   }
 
   const addTask = (idGoal: number, idNewTask: number, value: string) => {
-    dispatch({
+    dispatchWithMiddlewares({
       type: 'ADD_TASK',
       payload: { idGoal, idNewTask, value }
     })
   }
 
   const toggleCompleteTask = (idGoal: number, idTask: number, state: boolean) => {
-    dispatch({
+    dispatchWithMiddlewares({
       type: 'TOGGLE_COMPLETE_TASK',
       payload: { idGoal, idTask, state }
     })

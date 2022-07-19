@@ -59,18 +59,35 @@ const TaskCard = ({ id, text, status, idGoal, addTaskToDelete, quitTaskToDelete,
           ...styles.textContainer,
           backgroundColor: (isSelected ? '#4366c73b' : 'transparent')
         }}
-        onPress={() => setIsActiveEdition(true)}
+        onPress={() => quitTaskToDelete(id)}
+        onLongPress={() => addTaskToDelete(id)}
+        delayLongPress={600}
         disabled={isCompleted}
       >
-        <Input
-          style={{
-            ...styles.textInput,
-            color: variablesStyle.inputTextColor
-          }}
-          text={text}
-          idGoal={idGoal}
-          idTask={id}
-        />
+        {
+          !isCompleted
+          ? (
+            <Input
+              style={{
+                ...styles.textInput,
+                color: variablesStyle.inputTextColor
+              }}
+              text={text}
+              idGoal={idGoal}
+              idTask={id}
+            />
+          )
+          : (
+            <Text
+              style={{
+                ...styles.textInput,
+                ...styles.text
+              }}
+            >
+              {text}
+            </Text>
+          )
+        }
       </TouchableOpacity>
     </TouchableOpacity>
   )
@@ -89,7 +106,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    marginTop: 2,
+    marginTop: 4,
     paddingRight: 12,
     borderRadius: 5
   },
@@ -97,7 +114,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingLeft: 5,
     paddingRight: 0,
-    paddingVertical: 0,
+    paddingVertical: 1,
+  },
+  text: {
+    paddingVertical: 4,
+    textDecorationLine: 'line-through'
   }
 });
 
