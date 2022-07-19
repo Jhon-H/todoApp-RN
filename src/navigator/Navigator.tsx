@@ -1,6 +1,5 @@
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import { Task } from '../utils/interfaces/goal.interface';
 import HomeScreen from '../screens/HomeScreen';
 import TasksScreen from '../screens/TasksScreen';
 
@@ -22,7 +21,7 @@ export const Navigator = () => {
         headerShown: false,
         cardStyle: {
           backgroundColor: '#fff'
-        }
+        },
       }}
     >
       <Stack.Screen name="HomeScreen" component={HomeScreen} />

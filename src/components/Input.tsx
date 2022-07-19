@@ -7,9 +7,11 @@ interface Props {
   text: string;
   idGoal: number;
   idTask: number;
+  style?: any;
+  // rest?: any[]; // TODO: add rest params (rest vs ohter name) 
 }
 
-const Input = ({ text, idGoal, idTask }: Props) => {
+const Input = ({ text, idGoal, idTask, style = {} }: Props) => {
   const { text: textInput, form, handleInputChange } = useForm({ text })
   const { modifyTask } = useContext(GoalsContext)
 
@@ -20,6 +22,11 @@ const Input = ({ text, idGoal, idTask }: Props) => {
 
   return (
     <TextInput
+      //TODO: in the rest params
+      multiline
+      //TODO.
+
+      style={style}
       onChangeText={(value) => handleChange(value, 'text')}
       value={textInput}
       autoCorrect={false}

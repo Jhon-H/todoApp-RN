@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useReducer } from 'react';
 import { getDataStorage } from '../utils/helpers/globalHelpers';
-import { Goal } from '../utils/interfaces/goal.interface';
-import { goalsReducer } from './goalsReducer';
+import { Goal, Task } from '../utils/interfaces/goal.interface';
+import { GoalActionContext, goalsReducer } from './goalsReducer';
 
 const initialState: Goal[] = [
   {
@@ -9,8 +9,6 @@ const initialState: Goal[] = [
     title: 'Work',
     icon: 'medical',
     dateCreation: new Date(2021, 4, 23, 10, 11),
-    completedGoals: 3,
-    totalGoals: 4,
     color: '#1b1b3a',
     tasks: [
       {id: 1, text: 'Exto es un texoadasd', status: 'COMPLETED'},
@@ -18,6 +16,14 @@ const initialState: Goal[] = [
       {id: 3, text: 'Dolor id in eu voluptate consectetur excepteur aute. Ipsum enim exercitation mollit irure minim in reprehenderit quis elit tempor exercitation do commodo in. Aliquip ad consectetur sit nulla nostrud eu id amet velit amet cillum. Consequat tempor labore commodo deserunt qui eu est reprehenderit consequat cupidatat. Fugiat ea occaecat nulla sit.', status: 'ACTIVED'},
       {id: 4, text: 'Reprehenderit sint laborum deserunt eiusmod mollit reprehenderit sit ullamco sint.', status: 'ACTIVED'},
       {id: 5, text: 'Commodo laborum sit esse qui magna qui pariatur nulla adipisicing fugiat Lorem voluptate.', status: 'ACTIVED'},
+      {id: 6, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+      {id: 7, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+      {id: 8, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+      {id: 9, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+      {id: 10, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+      {id: 11, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+      {id: 12, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+      {id: 13, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
     ],
   },
   {
@@ -25,18 +31,16 @@ const initialState: Goal[] = [
     title: 'Health',
     icon: 'code-working',
     dateCreation: new Date(2021, 4, 23, 10, 11),
-    completedGoals: 6,
-    totalGoals: 12,
     color: '#fb9f89',
-    tasks: []
+    tasks: [
+      {id: 1, text: 'Anim occaecat ea tempor cillum deserunt nostrud quis aute ea. Voluptate aliquip duis nisi labore veniam excepteur duis officia irure adipisicing ullamco Lorem deserunt mollit. Exercitation aliqua excepteur laborum fugiat adipisicing. Occaecat tempor ut ea in minim quis pariatur.', status: 'ACTIVED'},
+    ]
   },
   {
     id: 3,
     title: 'Private',
     icon: 'american-football',
     dateCreation: new Date(2021, 4, 23, 10, 11),
-    completedGoals: 1,
-    totalGoals: 3,
     color: '#21a179',
     tasks: []
   },
@@ -44,8 +48,6 @@ const initialState: Goal[] = [
     id: 4,
     title: 'This is a quite long goal to fit',
     dateCreation: new Date(2021, 4, 23, 10, 11),
-    completedGoals: 1,
-    totalGoals: 3,
     tasks: []
   },
 ]
@@ -54,6 +56,7 @@ type GoalsContextProps = {
   goals: Goal[];
   modifyTask: (idGoal: number, idTask: number, value: string) => void;
   deleteTask: (idGoal: number, idTask: number) => void;
+  deleteMutiplesTask: (idGoal: number,taskToDelete: number[]) => void;
   addTask: (idGoal: number, idNewTask: number, value: string) => void;
   toggleCompleteTask: (idGoal: number, idTask: number, state: boolean) => void;
 }
@@ -63,15 +66,21 @@ export const GoalsContext = createContext({} as GoalsContextProps)
 export const GoalsContextProvider = ({ children }: any) => {
   const [goals, dispatch] = useReducer(goalsReducer, initialState)
 
-  useEffect(() => {
-    getDataStorage()
-      .then(data => {
-        dispatch({
-          type: 'SET_GOALS',
-          payload: { goals: data }
-        })
-      })
-  }, [])
+  // useEffect(() => {
+  //   getDataStorage()
+  //     .then(data => {
+  //       dispatch({
+  //         type: 'SET_GOALS',
+  //         payload: { goals: data }
+  //       })
+  //     })
+  // }, [])
+
+  // Before dispatch action, execute middlewares
+  // const dispatchWithMiddlewares = (data: GoalActionContext) => {
+  //   middlewares()
+  //   dispatch(data)
+  // }
 
   const modifyTask = (idGoal: number, idTask: number, value: string) => {
     dispatch({
@@ -84,6 +93,15 @@ export const GoalsContextProvider = ({ children }: any) => {
     dispatch({
       type: 'DELETE_TASK',
       payload: { idGoal, idTask }
+    })
+  }
+
+  const deleteMutiplesTask = (idGoal: number, taskToDelete: number[]) => {
+    taskToDelete.forEach( idTaskToDelete => {
+      dispatch({
+        type: 'DELETE_TASK',
+        payload: { idGoal, idTask: idTaskToDelete }
+      })
     })
   }
 
@@ -106,6 +124,7 @@ export const GoalsContextProvider = ({ children }: any) => {
       goals,
       modifyTask,
       deleteTask,
+      deleteMutiplesTask,
       addTask,
       toggleCompleteTask
     }}>

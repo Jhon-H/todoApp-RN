@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { FlatList, Text, View, StyleSheet, Dimensions, StatusBar } from 'react-native'
-import Svg, { Path } from 'react-native-svg'
+import { FlatList, StatusBar, StyleSheet, View } from 'react-native'
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigator/Navigator';
 import { GoalsContext } from '../context/GoalsProvider';
@@ -14,31 +13,72 @@ interface Props extends StackScreenProps<RootStackParamList, 'TasksScreen'> {}
 
 const TasksScreen = ({ route }: Props) => {
   const { idGoal, goalName, color } = route.params
-  const { goals } = useContext(GoalsContext)
+  const { goals, deleteMutiplesTask } = useContext(GoalsContext)
   const [tasks, setTasks] = useState<Task[]>([])
+  const [taskToDelete, setTaskToDelete] = useState<number[]>([])
+
+  const addTaskToDelete = (id: number) => {
+    setTaskToDelete([
+      ...taskToDelete,
+      id
+    ])
+  }
+
+  const quitTaskToDelete = (id: number) => {
+    setTaskToDelete(
+      taskToDelete.filter(idTask => idTask !== id)
+    )
+  }
+
+  const deleteTasks = () => {
+    deleteMutiplesTask(idGoal, taskToDelete)
+    setTaskToDelete([])
+  }
 
   useEffect(() => {
     const tasksOfCurrentGoal = goals.find(goal => goal.id === idGoal)
     setTasks(tasksOfCurrentGoal?.tasks || [])
-  }, [goals])
+  }, [goals, idGoal])
 
   return (
-    <View>
+    <View style={ styles.container }>
       {/* Change color statusBar */}
-      <StatusBar backgroundColor={color}/>
+      <StatusBar backgroundColor={color} />
 
       <FlatList
         data={tasks}
-        renderItem={({ item }) => <TaskCard {...item} idGoal={idGoal} />}
+        renderItem={({ item }) => (
+          <TaskCard
+            {...item}
+            idGoal={idGoal}
+            addTaskToDelete={addTaskToDelete}
+            quitTaskToDelete={quitTaskToDelete}
+            taskToDelete={taskToDelete}
+          />
+        )}
         keyExtractor={({ id }) => `${id}`}
 
         ItemSeparatorComponent={TaskSeparator}
-        ListHeaderComponent={() => <TaskScreenHeader color={color} title={goalName}/>}
-      />
+        ListHeaderComponent={() => (
+          <TaskScreenHeader
+            color={color}
+            title={goalName}
+            numberOfTaskToDelete={taskToDelete.length}
+            deleteTasks={deleteTasks}
+          />
+        )}
+        ListFooterComponent={() => <NewTaskCard idGoal={idGoal} />}
 
-      <NewTaskCard idGoal={idGoal}/>
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 20
+  }
+});
 
 export default TasksScreen

@@ -17,6 +17,7 @@ const CardGoal = ({ id, title, dateCreation, icon, color = '#5E2BFF'}: Props) =>
   const sideLengthCard = (widthScreen - 2 * variablesStyle.globalMarginHorizontal - 10) / 2;
 
   const { goals } = useContext(GoalsContext)
+  const [progress, setProgress] = useState(0)
   const [{ totalTasks, completedTasks }, setInfoTasks] = useState({
     totalTasks: 0,
     completedTasks: 0,
@@ -25,6 +26,8 @@ const CardGoal = ({ id, title, dateCreation, icon, color = '#5E2BFF'}: Props) =>
   useEffect(() => {
     const totalTasks = getTotalTasks(id, goals)
     const completedTasks = getTotalCompletedTasks(id, goals)
+
+    setProgress(( !totalTasks  ? 0 : (completedTasks * 100) / totalTasks + 4))
 
     setInfoTasks({
       totalTasks,
@@ -52,7 +55,7 @@ const CardGoal = ({ id, title, dateCreation, icon, color = '#5E2BFF'}: Props) =>
       <View style={ styles.mainInfo }>
         {
           icon && (
-            <Icon name={icon} size={25}/>
+            <Icon name={icon} size={25} color="rgba(255,255,255,0.8)" />
           )
         }
         <Text style={ styles.title }>{title}</Text>
@@ -66,7 +69,13 @@ const CardGoal = ({ id, title, dateCreation, icon, color = '#5E2BFF'}: Props) =>
           {completedTasks} of {totalTasks}
         </Text>
 
-        <CircularProgressBar progress={10} />
+        <CircularProgressBar
+          progress={progress}
+          size={24}
+          strokeWidth={4}
+          colorOneCircle="rgba(255,255,255,0.4)"
+          colorTwoCircle="#fff"
+        />
       </View>
 
     </TouchableOpacity>
@@ -79,7 +88,6 @@ const styles = StyleSheet.create({
     height: 150,
     backgroundColor: 'orange',
     padding: 15,
-    paddingBottom: 18,
     borderRadius: 15,
     marginVertical: 5
   },
@@ -101,7 +109,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   goalsResume: {
     color: '#fff',

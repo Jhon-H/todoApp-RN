@@ -11,10 +11,11 @@ const TaskSeparator = () => {
 
 const styles = StyleSheet.create({
   separator: {
-    borderBottomColor: '#000',
+    borderBottomColor: 'rgba(0,0,0,0.7)',
     borderBottomWidth: StyleSheet.hairlineWidth,
     width: widthScreen - 24,
-    marginHorizontal: 12
+    marginHorizontal: 12,
+    marginVertical: 2
   }
 });
 

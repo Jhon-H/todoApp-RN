@@ -1,7 +1,7 @@
 import { Goal } from '../utils/interfaces/goal.interface'
 
 
-type GoalActionContext =
+export type GoalActionContext =
   | { type: 'MODIFY_TASK', payload: {idGoal: number, idTask: number, value: string}}
   | { type: 'MODIFY_GOAL'}
   | { type: 'ADD_TASK', payload: {idGoal: number, idNewTask: number, value: string}}

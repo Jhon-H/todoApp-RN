@@ -4,22 +4,45 @@ import Svg, { Circle } from 'react-native-svg'
 
 interface Props {
   progress: number;
+  size: number;
+  strokeWidth?: number;
+  colorOneCircle?: string;
+  colorTwoCircle?: string;
 }
 
-const CircularProgressBar = ({ progress = 0.0 }: Props) => {
+const CircularProgressBar = ({ size, strokeWidth = 5, colorOneCircle = '#B3B3F1', colorTwoCircle = '#443850', progress = 0.0 }: Props) => {
+  const center = size / 2;
+  const radius = size / 2 - strokeWidth / 2;
+  const circumference = 2 * Math.PI  * radius;
+  const offset = ((100 - Math.min(progress, 100)) / 100) * circumference;
+
   return (
-    <Svg style={styles.svg} viewBox="-1 -1 34 34">
-      <Circle cx="16" cy="16" r="14" fill="none" stroke="#fff" strokeWidth="5"/>
-      <Circle cx="16" cy="16" r="14" fill="none" stroke="dodgerblue" strokeDasharray="50 50" strokeDashoffset="10" strokeWidth="5"/>
+    <Svg  style={ styles.svg } width={size} height={size}>
+      <Circle
+        cx={center}
+        cy={center}
+        r={radius}
+        fill="none"
+        stroke={colorOneCircle}
+        strokeWidth={strokeWidth}
+      />
+
+      <Circle
+        cx={center}
+        cy={center}
+        r={radius}
+        fill="none"
+        stroke={colorTwoCircle}
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+      />
     </Svg>
   )
 }
 
 const styles = StyleSheet.create({
   svg: {
-    borderRadius: 300,
-    width: 26,
-    height: 26
   }
 });
 

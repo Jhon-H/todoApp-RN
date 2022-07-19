@@ -1,15 +1,18 @@
 import React from 'react'
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg'
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const { width: widthScreen } = Dimensions.get('window')
 
 interface Props {
   title: string;
   color: string;
+  numberOfTaskToDelete: number;
+  deleteTasks: () => void;
 }
 
-const TaskScreenHeader = ({ title, color }: Props) => {
+const TaskScreenHeader = ({ title, color, numberOfTaskToDelete, deleteTasks }: Props) => {
   return (
     <View style={ styles.container }>
       <Svg viewBox="0 0 1430 317" style={ styles.background }>
@@ -17,6 +20,21 @@ const TaskScreenHeader = ({ title, color }: Props) => {
       </Svg>
 
       <Text style={ styles.title }>{title}</Text>
+
+      {
+        (numberOfTaskToDelete > 0) && (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={deleteTasks}
+            style={ styles.deleteTaskContainer }
+          >
+            <Icon name="trash-outline" size={25} color="rgba(255,255,255,0.8)" />
+            <Text style={ styles.deleteTaskText}>
+              {numberOfTaskToDelete}
+            </Text>
+          </TouchableOpacity>
+        )
+      }
     </View>
   )
 }
@@ -24,7 +42,7 @@ const TaskScreenHeader = ({ title, color }: Props) => {
 const styles = StyleSheet.create({
   container : {
     width: widthScreen,
-    height: 91
+    height: 91,
   },
   background: {
     position: 'absolute',
@@ -33,11 +51,23 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: 20,
     paddingVertical: 10,
     fontSize: 30,
     fontWeight: 'bold',
     color: '#fff'
+  },
+  deleteTaskContainer: {
+    zIndex: 10,
+    position: 'absolute',
+    right: 20,
+    top: 19,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  deleteTaskText: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.8)'
   }
 });
 
